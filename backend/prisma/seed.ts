@@ -18,14 +18,12 @@ async function main() {
     },
   });
 
-  console.log('✅ Created test user:', testUser.email);
+  console.log('✅ Created test user:', testUser.email, 'ID:', testUser.id);
 
   // Создаем несколько тестовых кампаний
   const campaigns = await Promise.all([
-    prisma.campaign.upsert({
-      where: { id: 1 },
-      update: {},
-      create: {
+    prisma.campaign.create({
+      data: {
         name: 'Summer Sale Campaign',
         budget: 5000.00,
         startDate: new Date('2024-06-01'),
@@ -33,10 +31,8 @@ async function main() {
         userId: testUser.id,
       },
     }),
-    prisma.campaign.upsert({
-      where: { id: 2 },
-      update: {},
-      create: {
+    prisma.campaign.create({
+      data: {
         name: 'Black Friday Promotion',
         budget: 10000.00,
         startDate: new Date('2024-11-29'),
@@ -44,10 +40,8 @@ async function main() {
         userId: testUser.id,
       },
     }),
-    prisma.campaign.upsert({
-      where: { id: 3 },
-      update: {},
-      create: {
+    prisma.campaign.create({
+      data: {
         name: 'New Year Campaign',
         budget: 7500.00,
         startDate: new Date('2024-12-25'),
@@ -57,7 +51,10 @@ async function main() {
     }),
   ]);
 
-  console.log('✅ Created campaigns:', campaigns.length);
+  console.log('✅ Created campaigns:');
+  campaigns.forEach(campaign => {
+  console.log(`   - ${campaign.name} (ID: ${campaign.id})`);
+});
   console.log('🎉 Seeding completed!');
 }
 
