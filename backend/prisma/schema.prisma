@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  
+  // Связь с кампаниями
+  campaigns    Campaign[]
+
+  @@map("users")
+}
+
+model Campaign {
+  id        Int      @id @default(autoincrement())
+  name      String
+  budget    Decimal  @db.Decimal(10, 2)
+  startDate DateTime @map("start_date")
+  status    String   @default("draft") // draft, active, paused, completed
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // Связь с пользователем
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("campaigns")
+  @@index([userId])
+}
